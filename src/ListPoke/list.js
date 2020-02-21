@@ -9,58 +9,76 @@ export default class List extends Component {
         }
     }
 
-    componentDidMount() {
+    arr = [];
 
-        const currentComponentItems = this.state.items;
-
-        fetchKantoPokemon();
-
-        function fetchKantoPokemon() {
-            fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
-                .then(response => response.json())
-                .then(allpokemon => allpokemon.results.forEach(pokemon => fetchPokemonData(pokemon)))
-        }
-
-        function fetchPokemonData(pokemon) {
-            let url = pokemon.url
-            fetch(url)
-                .then(response => response.json())
-                .then((pokeData) => {
-                    currentComponentItems.push(pokeData);
-                })
-        }
+    fetchKantoPokemon = () => {
+        fetch('https://pokeapi.co/api/v2/pokemon?limit=850')
+            .then(response => response.json())
+            .then(allpokemon => allpokemon.results.forEach(pokemon => this.fetchPokemonData(pokemon)))
     }
 
+    fetchPokemonData = (pokemon) => {
+        let url = pokemon.url
+        fetch(url)
+            .then(response => response.json())
+            .then((pokeData) => {
 
-    render() {
-        // async function fetchPokemonData(pokemon) {
-        //     let url = pokemon.url // <--- this is saving the pokemon url to a      variable to us in a fetch.(Ex: https://pokeapi.co/api/v2/pokemon/1/)
-        //     await fetch(url)
-        //         .then(response => response.json())
-        //         .then(pokeData => {
-        //             console.log(pokeData);
-        //             items.push(<li>{pokeData.name}</li>);
-        //             console.log(items);
-        //         })
+                // this.setState({
+                //     items: pokeData
+                // })
 
-        //     //pokeData.forEach(element => items.push(<li>{element}</li>))
-        //     //);
-        // }
+                this.setState(state => {
+                    const items = state.items.concat(pokeData);
+                    return {
+                        items
+                    };
+                });
 
-        // async function fetchKantoPokemon() {
-        //     await fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+                //console.log(this.state.items);
+
+                this.arr.push(pokeData)
+
+            })
+    }
+
+    componentDidMount() {
+
+        //const currentComponentItems = this;
+
+        this.fetchKantoPokemon();
+
+        // function fetchKantoPokemon() {
+        //     fetch('https://pokeapi.co/api/v2/pokemon?limit=99')
         //         .then(response => response.json())
         //         .then(allpokemon => allpokemon.results.forEach(pokemon => fetchPokemonData(pokemon)))
         // }
 
-        console.log(this.state.items);
-        let items = this.state.items.map((param, i) => { return <li key={i}>{param.name}</li> });
-        console.log(items);
+        // function fetchPokemonData(pokemon) {
+        //     let url = pokemon.url
+        //     fetch(url)
+        //         .then(response => response.json())
+        //         .then((pokeData) => {
+        //             currentComponentItems.setState({
+        //                 items: pokeData
+        //             })
+        //         })
+        // }
+    }
 
+
+    render() {
+        console.log('arr', this.arr);
 
         return (
             <ul>
-                {items}
+                {
+
+                    this.state.items.map(item =>
+                        (
+                            <li key={item.name}><span>{item.id} - </span>{item.name}
+                            </li>
+                        )
+                    )}
             </ul>
         )
     }
